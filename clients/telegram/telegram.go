@@ -19,3 +19,9 @@ func New(host string, token string) Client {
 func newBasePath(token string) string {
 	return "bot" + token
 }
+
+func (c *Client) Updates() {
+}
+
+func (c *Client) SendMessage() {
+}
