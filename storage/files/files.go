@@ -2,10 +2,13 @@ package files
 
 import (
 	"encoding/gob"
+	"errors"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"tg-bot/lib/e"
 	"tg-bot/storage"
+	"time"
 )
 
 type Storage struct {
@@ -14,12 +17,14 @@ type Storage struct {
 
 const defaultPerm = 0774
 
+var ErrNoSavedPage = errors.New("no saved pages")
+
 func New(basePath string) Storage {
 	return Storage{basePath: basePath}
 }
 
 func (s Storage) Save(page *storage.Page) (err error) {
-	defer func() { err = e.WrapIfErr("can't save", err) }()
+	defer func() { err = e.WrapIfErr("can't save page", err) }()
 
 	fPath := filepath.Join(s.basePath, page.UserName)
 
@@ -44,6 +49,26 @@ func (s Storage) Save(page *storage.Page) (err error) {
 		return err
 	}
 	return nil
+}
+
+func (s Storage) PickRandom(userName string) (page *storage.Page, err error) {
+	defer func() { err = e.WrapIfErr("can't pick random", err) }()
+
+	path := filepath.Join(s.basePath, userName)
+
+	files, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(files) == 0 {
+		return nil, ErrNoSavedPage
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	n := rand.Intn(len(files))
+
+	file := files[n]
 }
 
 func fileName(p *storage.Page) (string, error) {
