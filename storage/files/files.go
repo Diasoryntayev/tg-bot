@@ -1,6 +1,7 @@
 package files
 
 import (
+	"encoding/gob"
 	"os"
 	"path/filepath"
 	"tg-bot/lib/e"
@@ -20,9 +21,31 @@ func New(basePath string) Storage {
 func (s Storage) Save(page *storage.Page) (err error) {
 	defer func() { err = e.WrapIfErr("can't save", err) }()
 
-	filePath := filepath.Join(s.basePath, page.UserName)
+	fPath := filepath.Join(s.basePath, page.UserName)
 
-	if err := os.MkdirAll(filePath, defaultPerm); err != nil {
+	if err := os.MkdirAll(fPath, defaultPerm); err != nil {
 		return err
 	}
+
+	fName, err := fileName(page)
+	if err != nil {
+		return err
+	}
+
+	fPath = filepath.Join(fPath, fName)
+
+	file, err := os.Create(fPath)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = file.Close() }()
+
+	if err := gob.NewEncoder(file).Encode(page); err != nil {
+		return err
+	}
+	return nil
+}
+
+func fileName(p *storage.Page) (string, error) {
+	return p.Hash()
 }
