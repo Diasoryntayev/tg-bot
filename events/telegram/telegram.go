@@ -32,3 +32,12 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 		res = append(res, event(u))
 	}
 }
+
+func event(upd telegram.Update) events.Event {
+	res := events.Event{
+		Type: fetchType(upd),
+		Text: fetchText(upd),
+	}
+}
+
+// func fetchText(upd telegram.Update) string {}
