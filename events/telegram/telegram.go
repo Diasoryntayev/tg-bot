@@ -2,6 +2,8 @@ package telegram
 
 import (
 	"tg-bot/clients/telegram"
+	"tg-bot/events"
+	"tg-bot/lib/e"
 	"tg-bot/storage"
 )
 
@@ -15,5 +17,18 @@ func New(client *telegram.Client, storage storage.Storage) *Processor {
 	return &Processor{
 		tg:      client,
 		storage: storage,
+	}
+}
+
+func (p *Processor) Fetch(limit int) ([]events.Event, error) {
+	update, err := p.tg.Updates(p.offset, limit)
+	if err != nil {
+		return nil, e.Wrap("can't get events", err)
+	}
+
+	res := make([]events.Event, 0, len(update))
+
+	for _, u := range update {
+		res = append(res, event(u))
 	}
 }
