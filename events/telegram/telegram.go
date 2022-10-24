@@ -40,4 +40,16 @@ func event(upd telegram.Update) events.Event {
 	}
 }
 
-// func fetchText(upd telegram.Update) string {}
+func fetchText(upd telegram.Update) string {
+	if upd.Message == nil {
+		return ""
+	}
+	return upd.Message.Text
+}
+
+func fetchType(upd telegram.Update) events.Type {
+	if upd.Message == nil {
+		return events.Unknown
+	}
+	return events.Message
+}
