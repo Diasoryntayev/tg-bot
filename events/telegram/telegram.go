@@ -13,6 +13,11 @@ type Processor struct {
 	storage storage.Storage
 }
 
+type Meta struct {
+	ChatID   int
+	Username string
+}
+
 func New(client *telegram.Client, storage storage.Storage) *Processor {
 	return &Processor{
 		tg:      client,
@@ -34,10 +39,20 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 }
 
 func event(upd telegram.Update) events.Event {
+	updType := fetchType(upd)
+
 	res := events.Event{
 		Type: fetchType(upd),
 		Text: fetchText(upd),
 	}
+
+	if updType == events.Message {
+		res.Meta = Meta{
+			ChatID:   upd.Message.Chat.ID,
+			Username: upd.Message.From.Username,
+		}
+	}
+	return res
 }
 
 func fetchText(upd telegram.Update) string {
