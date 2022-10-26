@@ -57,6 +57,13 @@ func (p *Processor) Process(event events.Event) error {
 	}
 }
 
+func (p *Processor) processMessage(event events.Event) error {
+	meta, err := meta(event)
+	if err != nil {
+		return e.Wrap("can't process message", err)
+	}
+}
+
 func event(upd telegram.Update) events.Event {
 	updType := fetchType(upd)
 
