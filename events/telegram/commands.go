@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/url"
 	"strings"
+	"tg-bot/lib/e"
+	"tg-bot/storage"
 )
 
 const (
@@ -26,6 +28,24 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	case HelpCmd:
 	case StarCmd:
 	default:
+	}
+}
+
+func (p *Processor) savePage(chatID int, pageURL string, username string) (err error) {
+	defer func() { err = e.WrapIfErr("can't do command: save page", err) }()
+
+	page := &storage.Page{
+		URL:      pageURL,
+		UserName: username,
+	}
+
+	isExists, err := p.storage.IsExists(page)
+	if err != nil {
+		return err
+	}
+
+	if isExists {
+		return p.tg.SendMessage(chatID, "")
 	}
 }
 
