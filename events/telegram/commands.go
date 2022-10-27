@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"log"
+	"net/url"
 	"strings"
 )
 
@@ -16,7 +17,9 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 
 	log.Printf("got new command '%s' from '%s'", text, username)
 
-	if isAddCmd(text)
+	if isAddCmd(text) {
+		// TODO: AddPage()
+	}
 
 	switch text {
 	case RndCmd:
@@ -24,4 +27,13 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	case StarCmd:
 	default:
 	}
+}
+
+func isAddCmd(text string) bool {
+	return isURL(text)
+}
+
+func isURL(text string) bool {
+	u, err := url.Parse(text)
+	return err == nil && u.Host != ""
 }
