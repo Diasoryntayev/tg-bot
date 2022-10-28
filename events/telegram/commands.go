@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"errors"
 	"log"
 	"net/url"
 	"strings"
@@ -56,6 +57,24 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) (err e
 		return err
 	}
 	return nil
+}
+
+func (p *Processor) SendRandom(chatID int, username string) (err error) {
+	defer func() { err = e.WrapIfErr("can't do command: can't send Random", err) }()
+
+	page, err := p.storage.PickRandom(username)
+	if err != nil && !errors.Is(err, storage.ErrNoSavedPage) {
+		return err
+	}
+	if errors.Is(err, storage.ErrNoSavedPage) {
+		return p.tg.SendMessage(chatID, msgNoSavedPages)
+	}
+
+	if err := p.tg.SendMessage(chatID, page.URL); err != nil {
+		return err
+	}
+
+	return p.storage.Remove(page)
 }
 
 func isAddCmd(text string) bool {
