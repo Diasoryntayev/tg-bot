@@ -6,8 +6,8 @@ type UpdateResponse struct {
 }
 
 type Update struct {
-	UpdateID int              `json:"update_id"`
-	Message  *IncomingMessage `json:"message"`
+	ID      int              `json:"update_id"`
+	Message *IncomingMessage `json:"message"`
 }
 
 type IncomingMessage struct {
