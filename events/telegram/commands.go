@@ -45,8 +45,17 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) (err e
 	}
 
 	if isExists {
-		return p.tg.SendMessage(chatID, "")
+		return p.tg.SendMessage(chatID, msgAlreadyExists)
 	}
+
+	if err := p.storage.Save(page); err != nil {
+		return err
+	}
+
+	if err := p.tg.SendMessage(chatID, msgSaved); err != nil {
+		return err
+	}
+	return nil
 }
 
 func isAddCmd(text string) bool {
