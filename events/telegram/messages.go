@@ -13,4 +13,5 @@ const (
 	msgUnknownCommand = "Unknown command"
 	msgNoSavedPages   = "You haven't got saved pages"
 	msgSaved          = "Saved! "
+	msgAlreadyExists  = "You already have this page in your list"
 )
