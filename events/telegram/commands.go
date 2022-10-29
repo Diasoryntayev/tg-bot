@@ -77,6 +77,14 @@ func (p *Processor) SendRandom(chatID int, username string) (err error) {
 	return p.storage.Remove(page)
 }
 
+func (p *Processor) SendHelp(chatID int) error {
+	return p.tg.SendMessage(chatID, msgHelp)
+}
+
+func (p *Processor) SendHello(chatID int) error {
+	return p.tg.SendMessage(chatID, msgHello)
+}
+
 func isAddCmd(text string) bool {
 	return isURL(text)
 }
