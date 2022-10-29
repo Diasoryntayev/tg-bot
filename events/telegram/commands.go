@@ -21,14 +21,18 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	log.Printf("got new command '%s' from '%s'", text, username)
 
 	if isAddCmd(text) {
-		// TODO: AddPage()
+		return p.savePage(chatID, text, username)
 	}
 
 	switch text {
 	case RndCmd:
+		return p.sendRandom(chatID, username)
 	case HelpCmd:
+		return p.sendHelp(chatID)
 	case StarCmd:
+		return p.sendHello(chatID)
 	default:
+		return p.tg.SendMessage(chatID, msgUnknownCommand)
 	}
 }
 
@@ -59,7 +63,7 @@ func (p *Processor) savePage(chatID int, pageURL string, username string) (err e
 	return nil
 }
 
-func (p *Processor) SendRandom(chatID int, username string) (err error) {
+func (p *Processor) sendRandom(chatID int, username string) (err error) {
 	defer func() { err = e.WrapIfErr("can't do command: can't send Random", err) }()
 
 	page, err := p.storage.PickRandom(username)
@@ -77,11 +81,11 @@ func (p *Processor) SendRandom(chatID int, username string) (err error) {
 	return p.storage.Remove(page)
 }
 
-func (p *Processor) SendHelp(chatID int) error {
+func (p *Processor) sendHelp(chatID int) error {
 	return p.tg.SendMessage(chatID, msgHelp)
 }
 
-func (p *Processor) SendHello(chatID int) error {
+func (p *Processor) sendHello(chatID int) error {
 	return p.tg.SendMessage(chatID, msgHello)
 }
 
