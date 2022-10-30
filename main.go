@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"log"
-	"tg-bot/clients/telegram"
+	tgClient "tg-bot/clients/telegram"
 	event_consumer "tg-bot/consumer/event-consumer"
 	"tg-bot/events/telegram"
 	"tg-bot/storage/files"
@@ -17,7 +17,7 @@ const (
 
 func main() {
 	eventsProcessor := telegram.New(
-		telegram.New(tgBotHost, mustToken()),
+		tgClient.New(tgBotHost, mustToken()),
 		files.New(storagePath),
 	)
 
